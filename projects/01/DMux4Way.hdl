@@ -1,7 +1,7 @@
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
-// File name: projects/01/DMux4Way.hdl
+// File name: projects/b/DMux4Way.hdl
 
 /**
  * 4-way demultiplexor:
@@ -17,4 +17,32 @@ CHIP DMux4Way {
 
     PARTS:
     // Put your code here:
+    Nand (a=sel[0], b=sel[0], out=nsel0);
+    Nand (a=sel[1], b=sel[1], out=nsel1);
+
+    Nand (a=nsel0, b=nsel1, out=nsela);
+    Nand (a=nsela, b=nsela, out=sela);
+
+    Nand (a=sel[0], b=nsel1, out=nselb);
+    Nand (a=nselb, b=nselb, out=selb);
+
+    Nand (a=nsel0, b=sel[1], out=nselc);
+    Nand (a=nselc, b=nselc, out=selc);
+
+    Nand (a=sel[0], b=sel[1], out=nseld);
+    Nand (a=nseld, b=nseld, out=seld);
+
+    Nand (a=sela, b=in, out=nota);
+    Nand (a=nota, b=nota, out=a);
+
+    Nand (a=selb, b=in, out=notb);
+    Nand (a=notb, b=notb, out=b);
+
+    Nand (a=selc, b=in, out=notc);
+    Nand (a=notc, b=notc, out=c);
+
+    Nand (a=seld, b=in, out=notd);
+    Nand (a=notd, b=notd, out=d);
+
+
 }

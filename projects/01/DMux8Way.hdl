@@ -17,4 +17,22 @@ CHIP DMux8Way {
 
     PARTS:
     // Put your code here:
+    Nand (a=sel[0], b=sel[0], out=nsel0);
+    Nand (a=sel[1], b=sel[1], out=nsel1);
+    Nand (a=sel[2], b=sel[2], out=nsel2);
+
+    Nand (a=nsel0, b=nsel1, out=nsela);
+    Nand (a=nsela, b=nsela, out=sel14);
+
+    Nand (a=sel[0], b=nsel1, out=nselb);
+    Nand (a=nselb, b=nselb, out=sel24);
+
+    Nand (a=nsel0, b=sel[1], out=nselc);
+    Nand (a=nselc, b=nselc, out=sel34);
+
+    Nand (a=sel[0], b=sel[1], out=nseld);
+    Nand (a=nseld, b=nseld, out=sel44);
+
+
+
 }

@@ -15,4 +15,153 @@ CHIP Mux16 {
 
     PARTS:
     // Put your code here:
+
+    Nand (a=sel, b=sel, out=nsel); // we only want one of these
+
+    Nand (a=a[0], b=nsel, out=nandASEL0);
+    Nand (a=nandASEL0, b=nandASEL0, out=selA0);
+
+    Nand (a=b[0], b=sel, out=nandBSEL0);
+    Nand (a=nandBSEL0, b=nandBSEL0, out=selB0);
+
+    Nand (a = selA0, b = selA0, out = notSelA0);
+    Nand (a = selB0, b = selB0, out = notSelB0);
+    Nand (a = notSelA0, b = notSelB0, out = out[0]);
+    Nand (a=a[1], b=nsel, out=nandASEL1);
+    Nand (a=nandASEL1, b=nandASEL1, out=selA1);
+
+    Nand (a=b[1], b=sel, out=nandBSEL1);
+    Nand (a=nandBSEL1, b=nandBSEL1, out=selB1);
+
+    Nand (a = selA1, b = selA1, out = notSelA1);
+    Nand (a = selB1, b = selB1, out = notSelB1);
+    Nand (a = notSelA1, b = notSelB1, out = out[1]);
+    Nand (a=a[2], b=nsel, out=nandASEL2);
+    Nand (a=nandASEL2, b=nandASEL2, out=selA2);
+
+    Nand (a=b[2], b=sel, out=nandBSEL2);
+    Nand (a=nandBSEL2, b=nandBSEL2, out=selB2);
+
+    Nand (a = selA2, b = selA2, out = notSelA2);
+    Nand (a = selB2, b = selB2, out = notSelB2);
+    Nand (a = notSelA2, b = notSelB2, out = out[2]);
+    Nand (a=a[3], b=nsel, out=nandASEL3);
+    Nand (a=nandASEL3, b=nandASEL3, out=selA3);
+
+    Nand (a=b[3], b=sel, out=nandBSEL3);
+    Nand (a=nandBSEL3, b=nandBSEL3, out=selB3);
+
+    Nand (a = selA3, b = selA3, out = notSelA3);
+    Nand (a = selB3, b = selB3, out = notSelB3);
+    Nand (a = notSelA3, b = notSelB3, out = out[3]);
+    Nand (a=a[4], b=nsel, out=nandASEL4);
+    Nand (a=nandASEL4, b=nandASEL4, out=selA4);
+
+    Nand (a=b[4], b=sel, out=nandBSEL4);
+    Nand (a=nandBSEL4, b=nandBSEL4, out=selB4);
+
+    Nand (a = selA4, b = selA4, out = notSelA4);
+    Nand (a = selB4, b = selB4, out = notSelB4);
+    Nand (a = notSelA4, b = notSelB4, out = out[4]);
+    Nand (a=a[5], b=nsel, out=nandASEL5);
+    Nand (a=nandASEL5, b=nandASEL5, out=selA5);
+
+    Nand (a=b[5], b=sel, out=nandBSEL5);
+    Nand (a=nandBSEL5, b=nandBSEL5, out=selB5);
+
+    Nand (a = selA5, b = selA5, out = notSelA5);
+    Nand (a = selB5, b = selB5, out = notSelB5);
+    Nand (a = notSelA5, b = notSelB5, out = out[5]);
+    Nand (a=a[6], b=nsel, out=nandASEL6);
+    Nand (a=nandASEL6, b=nandASEL6, out=selA6);
+
+    Nand (a=b[6], b=sel, out=nandBSEL6);
+    Nand (a=nandBSEL6, b=nandBSEL6, out=selB6);
+
+    Nand (a = selA6, b = selA6, out = notSelA6);
+    Nand (a = selB6, b = selB6, out = notSelB6);
+    Nand (a = notSelA6, b = notSelB6, out = out[6]);
+    Nand (a=a[7], b=nsel, out=nandASEL7);
+    Nand (a=nandASEL7, b=nandASEL7, out=selA7);
+
+    Nand (a=b[7], b=sel, out=nandBSEL7);
+    Nand (a=nandBSEL7, b=nandBSEL7, out=selB7);
+
+    Nand (a = selA7, b = selA7, out = notSelA7);
+    Nand (a = selB7, b = selB7, out = notSelB7);
+    Nand (a = notSelA7, b = notSelB7, out = out[7]);
+    Nand (a=a[8], b=nsel, out=nandASEL8);
+    Nand (a=nandASEL8, b=nandASEL8, out=selA8);
+
+    Nand (a=b[8], b=sel, out=nandBSEL8);
+    Nand (a=nandBSEL8, b=nandBSEL8, out=selB8);
+
+    Nand (a = selA8, b = selA8, out = notSelA8);
+    Nand (a = selB8, b = selB8, out = notSelB8);
+    Nand (a = notSelA8, b = notSelB8, out = out[8]);
+    Nand (a=a[9], b=nsel, out=nandASEL9);
+    Nand (a=nandASEL9, b=nandASEL9, out=selA9);
+
+    Nand (a=b[9], b=sel, out=nandBSEL9);
+    Nand (a=nandBSEL9, b=nandBSEL9, out=selB9);
+
+    Nand (a = selA9, b = selA9, out = notSelA9);
+    Nand (a = selB9, b = selB9, out = notSelB9);
+    Nand (a = notSelA9, b = notSelB9, out = out[9]);
+    Nand (a=a[10], b=nsel, out=nandASEL10);
+    Nand (a=nandASEL10, b=nandASEL10, out=selA10);
+
+    Nand (a=b[10], b=sel, out=nandBSEL10);
+    Nand (a=nandBSEL10, b=nandBSEL10, out=selB10);
+
+    Nand (a = selA10, b = selA10, out = notSelA10);
+    Nand (a = selB10, b = selB10, out = notSelB10);
+    Nand (a = notSelA10, b = notSelB10, out = out[10]);
+    Nand (a=a[11], b=nsel, out=nandASEL11);
+    Nand (a=nandASEL11, b=nandASEL11, out=selA11);
+
+    Nand (a=b[11], b=sel, out=nandBSEL11);
+    Nand (a=nandBSEL11, b=nandBSEL11, out=selB11);
+
+    Nand (a = selA11, b = selA11, out = notSelA11);
+    Nand (a = selB11, b = selB11, out = notSelB11);
+    Nand (a = notSelA11, b = notSelB11, out = out[11]);
+    Nand (a=a[12], b=nsel, out=nandASEL12);
+    Nand (a=nandASEL12, b=nandASEL12, out=selA12);
+
+    Nand (a=b[12], b=sel, out=nandBSEL12);
+    Nand (a=nandBSEL12, b=nandBSEL12, out=selB12);
+
+    Nand (a = selA12, b = selA12, out = notSelA12);
+    Nand (a = selB12, b = selB12, out = notSelB12);
+    Nand (a = notSelA12, b = notSelB12, out = out[12]);
+    Nand (a=a[13], b=nsel, out=nandASEL13);
+    Nand (a=nandASEL13, b=nandASEL13, out=selA13);
+
+    Nand (a=b[13], b=sel, out=nandBSEL13);
+    Nand (a=nandBSEL13, b=nandBSEL13, out=selB13);
+
+    Nand (a = selA13, b = selA13, out = notSelA13);
+    Nand (a = selB13, b = selB13, out = notSelB13);
+    Nand (a = notSelA13, b = notSelB13, out = out[13]);
+    Nand (a=a[14], b=nsel, out=nandASEL14);
+    Nand (a=nandASEL14, b=nandASEL14, out=selA14);
+
+    Nand (a=b[14], b=sel, out=nandBSEL14);
+    Nand (a=nandBSEL14, b=nandBSEL14, out=selB14);
+
+    Nand (a = selA14, b = selA14, out = notSelA14);
+    Nand (a = selB14, b = selB14, out = notSelB14);
+    Nand (a = notSelA14, b = notSelB14, out = out[14]);
+    Nand (a=a[15], b=nsel, out=nandASEL15);
+    Nand (a=nandASEL15, b=nandASEL15, out=selA15);
+
+    Nand (a=b[15], b=sel, out=nandBSEL15);
+    Nand (a=nandBSEL15, b=nandBSEL15, out=selB15);
+
+    Nand (a = selA15, b = selA15, out = notSelA15);
+    Nand (a = selB15, b = selB15, out = notSelB15);
+    Nand (a = notSelA15, b = notSelB15, out = out[15]);
+
+
 }

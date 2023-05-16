@@ -15,4 +15,21 @@ CHIP Mux {
 
     PARTS:
     // Put your code here:
+
+    // * first we need to AND both a and sel (or NOT sel in the case of b), and then we need to AND both of those together
+
+    // * first we want to have nsel so we dont make 16 of em later
+
+    Nand (a=sel, b=sel, out=nsel);
+
+    Nand (a=a, b=nsel, out=nandASEL);
+    Nand (a=nandASEL, b=nandASEL, out=selA);
+
+    Nand (a=b, b=sel, out=nandBSEL);
+    Nand (a=nandBSEL, b=nandBSEL, out=selB);
+
+    Nand (a = selA, b = selA, out = notSelA);
+    Nand (a = selB, b = selB, out = notSelB);
+    Nand (a = notSelA, b = notSelB, out = out);
+
 }

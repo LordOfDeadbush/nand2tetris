@@ -14,4 +14,69 @@ CHIP Or8Way {
 
     PARTS:
     // Put your code here:
+
+    // * first, we need to find the not of our input
+
+    Nand (a=in[0], b=in[0], out=notin0);
+    Nand (a=in[1], b=in[1], out=notin1);
+    Nand (a=in[2], b=in[2], out=notin2);
+    Nand (a=in[3], b=in[3], out=notin3);
+    Nand (a=in[4], b=in[4], out=notin4);
+    Nand (a=in[5], b=in[5], out=notin5);
+    Nand (a=in[6], b=in[6], out=notin6);
+    Nand (a=in[7], b=in[7], out=notin7);
+
+    // * now we do the staircase
+
+    Nand (a = notin0, b = notin1, out=or01);
+    Nand (a = or01, b = or01, out = nor01);
+
+    Nand (a = nor01, b = notin2, out = or02);
+    Nand (a = or02, b = or02, out = nor02);
+
+    Nand (a = nor02, b = notin3, out = or03);
+    Nand (a = or03, b = or03, out = nor03);
+
+    Nand (a = nor03, b = notin4, out = or04);
+    Nand (a = or04, b = or04, out = nor04);
+
+    Nand (a = nor04, b = notin5, out = or05);
+    Nand (a = or05, b = or05, out = nor05);
+
+    Nand (a = nor05, b = notin6, out = or06);
+    Nand (a = or06, b = or06, out = nor06);
+
+    Nand (a = nor06, b = notin7, out = out);
+    
+
+    // * the following is code i wish worked
+
+    // // * now we can do the first round:
+
+    // Nand (a = notin0, b = notin1, out = or01);
+    // Nand (a = notin2, b = notin3, out = or23);
+    // Nand (a = notin4, b = notin5, out = or45);
+    // Nand (a = notin6, b = notin7, out = or67);
+
+    // // * now for the second round of nots (jesus fuck why):
+
+
+    // Nand (a=or01, b=or01, out=notor01);
+    // Nand (a=or23, b=or23, out=notor23);
+    // Nand (a=or45, b=or45, out=notor45);
+    // Nand (a=or67, b=or67, out=notor67);
+
+    // // * now for the second tournament round:
+
+    // Nand (a = or01, b = or23, out = or0123);
+    // Nand (a = or45, b = or67, out = or4567);
+
+    // // * now for our last nots
+
+    // Nand (a=or0123, b=or0123, out = notor0123);
+    // Nand (a=or4567, b=or4567, out = notor4567);
+
+    // // * THE FINAL ROUND WOOOOOO
+
+    // Nand (a=or0123, b=or4567, out=out);
 }
