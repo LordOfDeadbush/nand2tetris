@@ -17,22 +17,64 @@ CHIP DMux8Way {
 
     PARTS:
     // Put your code here:
-    Nand (a=sel[0], b=sel[0], out=nsel0);
-    Nand (a=sel[1], b=sel[1], out=nsel1);
-    Nand (a=sel[2], b=sel[2], out=nsel2);
+    Nand (a=sel[2], b=sel[2], out=nsel02);
+    Nand (a=sel[1], b=sel[1], out=nsel01);
+    Nand (a=sel[0], b=sel[0], out=nsel00);
 
-    Nand (a=nsel0, b=nsel1, out=nsela);
+    Nand (a=nsel02, b=nsel01, out=nsela);
     Nand (a=nsela, b=nsela, out=sel14);
 
-    Nand (a=sel[0], b=nsel1, out=nselb);
+    Nand (a=nsel02, b=sel[1], out=nselb);
     Nand (a=nselb, b=nselb, out=sel24);
 
-    Nand (a=nsel0, b=sel[1], out=nselc);
+    Nand (a=sel[2], b=nsel01, out=nselc);
     Nand (a=nselc, b=nselc, out=sel34);
 
-    Nand (a=sel[0], b=sel[1], out=nseld);
+    Nand (a=sel[2], b=sel[1], out=nseld);
     Nand (a=nseld, b=nseld, out=sel44);
 
+    // selecting specific output from quarters
 
+    Nand (a=sel14, b=nsel00, out=nsel0);
+    Nand (a=nsel0, b=nsel0, out=sel0);
 
+    Nand (a=sel14, b=sel[0], out=nsel1);
+    Nand (a=nsel1, b=nsel1, out=sel1);
+
+    Nand (a=sel24, b=nsel00, out=nsel2);
+    Nand (a=nsel2, b=nsel2, out=sel2);
+
+    Nand (a=sel24, b=sel[0], out=nsel3);
+    Nand (a=nsel3, b=nsel3, out=sel3);
+
+    Nand (a=sel34, b=nsel00, out=nsel4);
+    Nand (a=nsel4, b=nsel4, out=sel4);
+
+    Nand (a=sel34, b=sel[0], out=nsel5);
+    Nand (a=nsel5, b=nsel5, out=sel5);
+
+    Nand (a=sel44, b=nsel00, out=nsel6);
+    Nand (a=nsel6, b=nsel6, out=sel6);
+
+    Nand (a=sel44, b=sel[0], out=nsel7);
+    Nand (a=nsel7, b=nsel7, out=sel7);
+
+    // now for the real shit
+
+    Nand (a=sel0, b=in, out=not0);
+    Nand (a=not0, b=not0, out=a);
+    Nand (a=sel1, b=in, out=not1);
+    Nand (a=not1, b=not1, out=b);
+    Nand (a=sel2, b=in, out=not2);
+    Nand (a=not2, b=not2, out=c);
+    Nand (a=sel3, b=in, out=not3);
+    Nand (a=not3, b=not3, out=d);
+    Nand (a=sel4, b=in, out=not4);
+    Nand (a=not4, b=not4, out=e);
+    Nand (a=sel5, b=in, out=not5);
+    Nand (a=not5, b=not5, out=f);
+    Nand (a=sel6, b=in, out=not6);
+    Nand (a=not6, b=not6, out=g);
+    Nand (a=sel7, b=in, out=not7);
+    Nand (a=not7, b=not7, out=h);
 }
