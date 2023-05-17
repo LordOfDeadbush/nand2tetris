@@ -14,4 +14,8 @@ CHIP HalfAdder {
 
     PARTS:
     // Put you code here:
+    Nand (a=a, b=b, out=ncarry);
+    Not (in = ncarry, out = carry);
+    Or (a=a, b=b, out=orab);
+    And (a = ncarry, b = orab, out=sum);
 }
