@@ -17,4 +17,11 @@ CHIP Mux4Way16 {
 
     PARTS:
     // Put your code here:
+
+    // first we put the code in for selecting the right cell    
+    Mux16(a=a, b=b, sel=sel[0], out=muxab);
+    Mux16(a=c, b=d, sel=sel[0], out=muxcd);
+    Mux16(a=muxab, b=muxcd, sel=sel[1], out=out);
+
+    // now we have to manually write the rest (or just make a program to do it for us :D)
 }
