@@ -42,5 +42,33 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+
+    // * NOTE: to negate, we do max (fully true) + x and then we increment
+    // zero the x input if zx
+    Mux16(a=x, b[0..15]=false, sel=zx, out=x0);
+    // negate the x input if nx
+    Not16(in=x0, out=negx);
+    Mux16(a=x0, b=negx, sel=nx, out=inx);
+    // zero the y input if yx
+    Mux16(a=y, b[0..15]=false, sel=zy, out=y0);
+    // negate the y input if ny
+    Not16(in=y0, out=negy);
+    Mux16(a=y0, b=negy, sel=ny, out=iny);
+    // compute x + y
+    Add16(a=inx, b=iny, out=addxy);
+    // compute x and y
+    And16(a=inx, b=iny, out=andxy);
+    // select the operation to keep
+    Mux16(a=andxy, b=addxy, sel=f, out=result);
+    // negate output
+    Not16(in=result, out=negr);
+    Mux16(a=result, b=negr, sel=no, out[0..7]=r1, out[8..15]=r2, out[15]=ng, out=out);
+    // check if output is zero
+    Or8Way(in=r1, out=firsthalf0);
+    Or8Way(in=r2, out=secondhalf0);
+    Or(a=firsthalf0, b=secondhalf0, out=nzr);
+    Not(in=nzr, out=zr);
+
+    // check if output is negative
+
 }
