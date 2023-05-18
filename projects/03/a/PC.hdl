@@ -17,4 +17,21 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+
+    // these tell if we need to change the reg
+
+    Or(a=load, b=inc, out=loadOrInc);
+    Or(a=loadOrInc, b=reset, out=doUpdate);
+
+    // Calculate increment
+
+    Inc16(in=unincremented, out=incremented);
+
+    // decide on payload
+
+    Mux16(a=incremented, b=in, sel=load, out=incOrInp);
+    Mux16(a=incOrInp, b=false, sel=reset, out=payload);
+
+    // update register
+    Register(in=payload, load=doUpdate, out=unincremented, out=out);
 }
