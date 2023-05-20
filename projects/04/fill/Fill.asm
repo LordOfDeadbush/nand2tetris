@@ -15,13 +15,38 @@
 
 
 (LOOP)
-    @24576 // the register for a keystroke
-    D=M // writing the input code to D so we can use later
+    @KBD
+    D=M
+    @KEYSTROKE
+    M=D // saving the key state to the keystroke register
+    @COUNT
+    M=0 // putting our count at 0 makes it so we can count the pixels we use (131072 pixels, so we should max out at 131071)
     @SCREEN
+    D=A
+    @REGISTER
     M=D
-    @R1
-    @LOOP
+    @UPDATESCREEN
     0;JMP
-(END)
-    @END
+
+(UPDATESCREEN)
+    @KEYSTROKE
+    D=M
+    @REGISTER
+    A=M
+    M=D
+    D=A+1
+    @REGISTER
+    M=D
+    @1
+    D=M
+    @COUNT
+    M=M+D
+    D=M-131072
+    @LOOP
+    D;JMP
+    @UPDATESCREEN
+    0;JMP
+
+    // this brings us back to the top
+    @LOOP
     0;JMP
