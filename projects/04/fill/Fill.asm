@@ -13,5 +13,15 @@
 
 // Put your code here.
 
+
 (LOOP)
-    
+    @24576 // the register for a keystroke
+    D=M // writing the input code to D so we can use later
+    @SCREEN
+    M=D
+    @R1
+    @LOOP
+    0;JMP
+(END)
+    @END
+    0;JMP
