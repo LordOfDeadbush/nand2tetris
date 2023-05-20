@@ -19,7 +19,6 @@
     @count
     M=0
 (LOOP)
-    // TODO
     @count
     D=M // storing count in D
     @R1
