@@ -11,22 +11,31 @@
 
 // Put your code here.
 
-// first we need to create our variables
-
-// @R0 would be R0, @R1 would be R1, @R2 would be R2
-// we want to multiply @0 by @1 to get @2
-// to do this, we need to make a loop with a counter that will break once it reaches @1, 
-// in which we will have a variable that will be increased by @0 every loop iteration
+// see: https://www.nand2tetris.org/_files/ugd/44046b_d70026d8c1424487a451eaba3e372132.pdf
 
 
-// for reference, how to add 2 numbers:
+    @R2
+    M=0 // setting the sum mem point to 0
+    @count
+    M=0
+(LOOP)
+    // TODO
+    @count
+    D=M // storing count in D
+    @R1
+    D=D-M // = count - R1 for loop check
+    D=D+1
+    @END
+    D;JGT // if our count is equal to R1 then we go to end
+    @R0
+    D=M // D = R1
+    @R2
+    M=M+D // adding R0 to R2
+    @count
+    M=M+1 // incrementing count
+    @LOOP
+    0;JMP // looping
 
-// @0
-// D=M
-// @1
-// D=D+M
-// @2
-// M=D
-
-// M is what is stored in the selected memory
-// D is our variable
+(END)
+    @END
+    0;JMP
