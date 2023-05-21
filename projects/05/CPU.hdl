@@ -38,6 +38,20 @@ CHIP CPU {
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
-    PARTS:
+    PARTS: // see diagram on book page 85 (fig 5.8)
     // Put your code here:
+
+    Not(in=instruction[0], out=notins0);
+
+    Mux16(a=instruction, b=ALUOutput, sel=instruction[0], out=Address);
+
+    ARegister(in=Address, load=instruction[0], out=AOutput, out[1..15]=addressM);
+
+    Mux16(a=inM, b=AOutput, sel=instruction[3], out=ALUin);
+
+    DRegister(in=ALUOutput, load=notins0, out=DOutput);
+
+    PC(in=AOutput, load=false, inc=notins0, reset=reset, out[1..15]=pc);
+
+    ALU(x=DOutput, y=ALUin, zx=inM[4], nx=inM[5], zy=inM[6], ny=inM[7], f=inM[8], no=inM[9], out=outM, out=ALUOutput, zr=zr, ng=ng);
 }
