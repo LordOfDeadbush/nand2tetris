@@ -27,5 +27,21 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // address[0] = 0 does RAM16K
+
+    // address[0] = 1 does IO (Screen, then Keyboard)
+    // address[1] when above condition:
+    // 0 for Screen
+    // 1 for Keyboard (Read only)
+    Not(in=address[1], out=notlk);
+
+    DMux(in=load, sel=address[0], a=lram, b=lio);
+    And(a=lio, b=notlk, out=lscreen);
+
+    RAM16K(in=in, load=lram, address=address[1..14], out=ramout);
+    Screen(in=in, load=lscreen, address=address[2..14], out=screenout);
+    Keyboard(out=keebout);
+
+    Mux16(a=keebout, b=screenout, sel=notlk, out=ioout);
+    Mux16(a=ramout, b=ioout, sel=address[0], out=out);
 }
