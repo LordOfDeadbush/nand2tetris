@@ -47,29 +47,40 @@ C instruction: 1xxaccccccdddjjj
 !!! TABLES !!!
 
 ? COMPUTATIONS (a, cccccc)
-?   comp    | c c c c c c
-?-----|-----|------------
-?  0  |     | 1 0 1 0 1 0
-?  1  |     | 1 1 1 1 1 1
-? -1  |     | 1 1 1 0 1 0
-?  D  |     | 0 0 1 1 0 0
-?  A  |  M  | 1 1 0 0 0 0
-? !D  |     | 0 0 1 1 0 1
-? !A  | !M  | 1 1 0 0 0 1
-? -D  |     | 0 0 1 1 1 1
-? -A  | -M  | 1 1 0 0 1 1
-? D+1 |     | 0 1 1 1 1 1
-? A+1 | M+1 | 1 1 0 1 1 1
-? D-1 |     | 0 0 1 1 1 0
-? A-1 | M-1 | 1 1 0 1 1 1
-? D+A | D+M | 0 0 0 0 1 0
-? D-A | D-M | 0 1 0 0 1 1
-? A-D | M-D | 0 0 0 1 1 1
-? D&A | D&M | 0 0 0 0 0 0
-? D|A | D|M | 0 1 0 1 0 1
-?-----|-----|------------
-? A=0 | A=1 |
+?   comp    | c c c c c c | NOTES
+?-----|-----|-------------|---------->
+?  0  |     | 1 0 1 0 1 0 | Zeroes x and y, adds both (0 + 0)
+?  1  |     | 1 1 1 1 1 1 | Zeroes and Negates both x and y, adds both and negate output (results in 1)
+? -1  |     | 1 1 1 0 1 0 | Zeroes both, negates only x, does not negate final answer, results in -1
+?  D  |     | 0 0 1 1 0 0 | Zeroes and negates y only, results in x (D)
+?  A  |  M  | 1 1 0 0 0 0 | Zeroes and negates x only, results in y (A or M)
+? !D  |     | 0 0 1 1 0 1 | etc...
+? !A  | !M  | 1 1 0 0 0 1 |
+? -D  |     | 0 0 1 1 1 1 |
+? -A  | -M  | 1 1 0 0 1 1 |
+? D+1 |     | 0 1 1 1 1 1 |
+? A+1 | M+1 | 1 1 0 1 1 1 |
+? D-1 |     | 0 0 1 1 1 0 |
+? A-1 | M-1 | 1 1 0 1 1 1 |
+? D+A | D+M | 0 0 0 0 1 0 |
+? D-A | D-M | 0 1 0 0 1 1 |
+? A-D | M-D | 0 0 0 1 1 1 |
+? D&A | D&M | 0 0 0 0 0 0 |
+? D|A | D|M | 0 1 0 1 0 1 |
+?-----|-----|-------------|---------->
+? a=0 | a=1 |             |
 ? Notes:
+? C values directly map to ALU Parameters:
+? c  c  c  c  c  c
+? zx nx zy ny f  no
+? zx - zero the x input (set to 0)
+? nx - negate the x input (not x)
+? zy - zero y
+? ny - negate y
+? f  - decides on function to run (x + y if 1, x AND y if 0)
+? no - negate output
+?
+? a switches between A and M (A when a=0, M when a=1) 
 
 
 * DESTINATION
@@ -101,17 +112,33 @@ CHIP CPU {
     PARTS: // see diagram on book page 85 (fig 5.8)
     // Put your code here:
 
-    Not(in=instruction[0], out=notins0);
+    // ! the following should only happen if we recieve a C instruction
+
+    // * writing to CPU registers
+    And(a=instruction[10], b=instruction[0], out=writeA);
+    And(a=instruction[11], b=instruction[0], out=writeD);
+    And(a=instruction[12], b=instruction[0], out=writeM);
+    
+    // * Jump commands
+    And(a=instruction[13], b=instruction[0], out=JumpL);
+    And(a=instruction[14], b=instruction[0], out=JumpE);
+    And(a=instruction[15], b=instruction[0], out=JumpG);    
+
+    // ! this part is the jump logic
+
+    // TODO
+
+    // ! this next part is all in the diagram
 
     Mux16(a=instruction, b=ALUOutput, sel=instruction[0], out=Address); // * leftmost MUX
 
-    ARegister(in=Address, load=instruction[0], out=AOutput, out[1..15]=addressM); 
+    ARegister(in=Address, load=writeA, out=AOutput, out[1..15]=addressM); 
 
     Mux16(a=inM, b=AOutput, sel=instruction[3], out=ALUin); // * right mux (kinda in the middle)
 
-    DRegister(in=ALUOutput, load=notins0, out=DOutput);
+    DRegister(in=ALUOutput, load=writeD, out=DOutput);
 
-    PC(in=AOutput, load=false, inc=notins0, reset=reset, out[1..15]=pc);
+    PC(in=AOutput, load=, inc=notins0, reset=reset, out[1..15]=pc);
 
     ALU(x=DOutput, y=ALUin, zx=inM[4], nx=inM[5], zy=inM[6], ny=inM[7], f=inM[8], no=inM[9], out=outM, out=ALUOutput, zr=zr, ng=ng);
 }
