@@ -11,42 +11,64 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
+// link for ref: https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm
+
 // Put your code here.
 
-
-(LOOP)
-    @KBD
-    D=M
-    @KEYSTROKE
-    M=D // saving the key state to the keystroke register
-    @COUNT
-    M=0 // putting our count at 0 makes it so we can count the pixels we use (131072 pixels, so we should max out at 131071)
+    @8192 // amount of pixels we have because it is NOT a 256 by 512, the book lied
+    D=A
+    @SCREEN
+    D=D+A
+    @MAX
+    M=D
     @SCREEN
     D=A
-    @REGISTER
+    @n
     M=D
-    @UPDATESCREEN
+(LOOP)
+    // if (n == MAX) reset count and go back to top of loop
+    @n
+    D=M
+    @MAX
+    D=M-D
+    @RESET
+    D;JEQ
+    // now for the fun stuff
+    @KBD
+    D=M
+    @SETWHITE
+    D;JEQ
+    @SETBLACK
     0;JMP
 
-(UPDATESCREEN)
-    @KEYSTROKE
+(SETBLACK)
+    // this is for blk
+    @SCREEN
     D=M
-    @REGISTER
-    A=M
-    M=D
-    D=A+1
-    @REGISTER
-    M=D
-    @1
-    D=M
-    @COUNT
-    M=M+D
-    D=M-131072
+    @n
+    A=D+M
+    M=-1
+    @n
+    M=M+1
     @LOOP
-    D;JMP
-    @UPDATESCREEN
     0;JMP
 
-    // this brings us back to the top
+(SETWHITE)
+    // this is for white
+    @SCREEN
+    D=M
+    @n
+    A=D+M
+    M=0
+    @n
+    M=M+1
+    @LOOP
+    0;JMP
+
+(RESET)
+    @SCREEN
+    D=A
+    @n
+    M=D
     @LOOP
     0;JMP
