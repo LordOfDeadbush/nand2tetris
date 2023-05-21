@@ -25,6 +25,66 @@
  * than to the address resulting from executing the current instruction. 
  */
 
+/* 
+C instruction: 1xxaccccccdddjjj
+
+* 1xx    - defines this as a C instruction (if it were 0xx it would be an A-Instructions)
+*          Note that the c input for the first MUX gate is the first bit as this will determine
+*          whether we use the ALU output or the inputted instruction as input for the A register
+
+? a      - changes what computation we do in the ALU (see below table)
+
+? cccccc - used in conjunction with a - see table
+
+* ddd    - the destination of our operation - see other table
+
+! jjj    - the jump thingy (see other other table) 
+!          This part is for when we do jumps in our ASM code 
+!          (Like JCT, JMP, etc)
+*/
+
+/*
+!!! TABLES !!!
+
+? COMPUTATIONS (a, cccccc)
+?   comp    | c c c c c c
+?-----|-----|------------
+?  0  |     | 1 0 1 0 1 0
+?  1  |     | 1 1 1 1 1 1
+? -1  |     | 1 1 1 0 1 0
+?  D  |     | 0 0 1 1 0 0
+?  A  |  M  | 1 1 0 0 0 0
+? !D  |     | 0 0 1 1 0 1
+? !A  | !M  | 1 1 0 0 0 1
+? -D  |     | 0 0 1 1 1 1
+? -A  | -M  | 1 1 0 0 1 1
+? D+1 |     | 0 1 1 1 1 1
+? A+1 | M+1 | 1 1 0 1 1 1
+? D-1 |     | 0 0 1 1 1 0
+? A-1 | M-1 | 1 1 0 1 1 1
+? D+A | D+M | 0 0 0 0 1 0
+? D-A | D-M | 0 1 0 0 1 1
+? A-D | M-D | 0 0 0 1 1 1
+? D&A | D&M | 0 0 0 0 0 0
+? D|A | D|M | 0 1 0 1 0 1
+?-----|-----|------------
+? A=0 | A=1 |
+? Notes:
+
+
+* DESTINATION
+* NOTES: First digit is A, second is D, third is M
+*        M affects writeM
+*        D register (load)
+*        A register (load)
+
+! Jumps
+! First digit is less than
+! Second is equal to
+! Third is more than
+
+*/
+
 CHIP CPU {
 
     IN  inM[16],         // M value input  (M = contents of RAM[A])
@@ -43,11 +103,11 @@ CHIP CPU {
 
     Not(in=instruction[0], out=notins0);
 
-    Mux16(a=instruction, b=ALUOutput, sel=instruction[0], out=Address);
+    Mux16(a=instruction, b=ALUOutput, sel=instruction[0], out=Address); // * leftmost MUX
 
-    ARegister(in=Address, load=instruction[0], out=AOutput, out[1..15]=addressM);
+    ARegister(in=Address, load=instruction[0], out=AOutput, out[1..15]=addressM); 
 
-    Mux16(a=inM, b=AOutput, sel=instruction[3], out=ALUin);
+    Mux16(a=inM, b=AOutput, sel=instruction[3], out=ALUin); // * right mux (kinda in the middle)
 
     DRegister(in=ALUOutput, load=notins0, out=DOutput);
 
