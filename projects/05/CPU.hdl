@@ -138,7 +138,7 @@ CHIP CPU {
 
     DRegister(in=ALUOutput, load=writeD, out=DOutput);
 
-    PC(in=AOutput, load=, inc=notins0, reset=reset, out[1..15]=pc);
+    PC(in=AOutput, load=false, inc=notins0, reset=reset, out[1..15]=pc);
 
     ALU(x=DOutput, y=ALUin, zx=inM[4], nx=inM[5], zy=inM[6], ny=inM[7], f=inM[8], no=inM[9], out=outM, out=ALUOutput, zr=zr, ng=ng);
 }
