@@ -115,30 +115,56 @@ CHIP CPU {
     // ! the following should only happen if we recieve a C instruction
 
     // * writing to CPU registers
-    And(a=instruction[10], b=instruction[0], out=writeA);
-    And(a=instruction[11], b=instruction[0], out=writeD);
-    And(a=instruction[12], b=instruction[0], out=writeM);
+    And(a=instruction[5], b=instruction[15], out=writeA);
+    And(a=instruction[4], b=instruction[15], out=writeD);
+    And(a=instruction[3], b=instruction[15], out=writeM);
     
     // * Jump commands
-    And(a=instruction[13], b=instruction[0], out=JumpL);
-    And(a=instruction[14], b=instruction[0], out=JumpE);
-    And(a=instruction[15], b=instruction[0], out=JumpG);    
+    And(a=instruction[2], b=instruction[15], out=JumpL);
+    And(a=instruction[1], b=instruction[15], out=JumpE);
+    And(a=instruction[0], b=instruction[15], out=JumpG);    
 
     // ! this part is the jump logic
 
-    // TODO
+    // equal to zero logic
+
+    Or8Way(in=AOutputfirst, out=ANot0first);
+    Or8Way(in=AOutputSecond, out=ANot0second);
+    Or(a=ANot0first, b=ANot0second, out=ANot0);
+    Not(in=ANot0, out=AE0);
+
+    // less than zero logic
+
+    And(a=ANot0, b=negativeA, out=ALT0);
+
+    // greater than zero logic
+
+    Not(in=negativeA, out=positiveA);
+    And(a=ANot0, b=positiveA, out=AGT0);
+
+    // preparing for jump condition
+
+    And(a=JumpL, b=ALT0, out=LJunp);
+    And(a=JumpG, b=AGT0, out=GJump);
+    And(a=JumpE, b=AE0, out=EJump);
+
+    // making jump condition
+
+    Or(a=LJunp, b=GJump, out=LGJump);
+    Or(a=EJump, b=LGJump, out=jump);
+    Not(in=jump, out=notjump);
 
     // ! this next part is all in the diagram
 
     Mux16(a=instruction, b=ALUOutput, sel=instruction[0], out=Address); // * leftmost MUX
 
-    ARegister(in=Address, load=writeA, out=AOutput, out[1..15]=addressM); 
+    ARegister(in=Address, load=writeA, out=AOutput, out[1..15]=addressM, out[0..7]=AOutputfirst, out[8..15]=AOutputSecond, out[0]=negativeA); 
 
-    Mux16(a=inM, b=AOutput, sel=instruction[3], out=ALUin); // * right mux (kinda in the middle)
+    Mux16(a=inM, b=AOutput, sel=instruction[12], out=ALUin); // * right mux (kinda in the middle)
 
     DRegister(in=ALUOutput, load=writeD, out=DOutput);
 
-    PC(in=AOutput, load=false, inc=notins0, reset=reset, out[1..15]=pc);
+    PC(in=AOutput, load=jump, inc=notjump, reset=reset, out[1..15]=pc);
 
     ALU(x=DOutput, y=ALUin, zx=inM[4], nx=inM[5], zy=inM[6], ny=inM[7], f=inM[8], no=inM[9], out=outM, out=ALUOutput, zr=zr, ng=ng);
 }
