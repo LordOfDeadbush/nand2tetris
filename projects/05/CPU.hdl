@@ -112,59 +112,112 @@ CHIP CPU {
     PARTS: // see diagram on book page 85 (fig 5.8)
     // Put your code here:
 
-    // ! the following should only happen if we recieve a C instruction
+    // * Decides between A and C instructions
+    DMux(in=true, sel=instruction[15], a=selA, b=selC); 
 
-    // * writing to CPU registers
-    And(a=instruction[5], b=instruction[15], out=writeA);
-    And(a=instruction[4], b=instruction[15], out=writeD);
-    And(a=instruction[3], b=instruction[15], out=writeM);
+    // * parses A instruction (removes leading digit)
+    Mux16(a=false, b[0..14]=instruction[0..14], sel=selA, out=Ainstruction);    
+
+    // * splits the C instruction into its respective parts
+    Mux16(
+        a=false, 
+        b[0..12]=instruction[0..12], 
+        sel=selC,
+        out[0]=j3,
+        out[1]=j2,
+        out[2]=j1,
+        out[3]=d3, 
+        out[3]=writeM,
+        out[4]=d2,
+        out[5]=d1,
+        out[6]=c6,
+        out[7]=c5,
+        out[8]=c4,
+        out[9]=c3,
+        out[10]=c2,
+        out[11]=c1,
+        out[12]=a
+    ); 
+
+    /*
+    ? The D stuff
+    * d1 = write to A register if this is 1
+    * d2 = write to D register (cache) if this is 1
+    * d3 = write to Memory
+    */
+
+    // ! The A register stuff:
+    // THis gate decides whether to overwrite the A register
+    Or(a=selA, b=d1, out=loadA); // either of these result in writing to A
+
+    // This code decides which value to overwrite with
+    Mux16(a=Ainstruction, b=ALUoutput, sel=d1, out=Areginput);
+
+    // this is the actual A register, not much explanation needed here
+    ARegister(in=Areginput, load=loadA, out=A, out[0..14]=addressM); // * BIG COMPONENT
+
+    // ! The D register stuff:
+    /*
+    not a lot of extra stuff is needed here as the D register is fairly simple
+    The reason the A register is complicated is because we can write to that 2 ways
+    This only has one way
+    */
+
+    DRegister(in=ALUoutput, load=d2, out=D); 
+
+    // ! Now onto the ALU
+
+    /*
+    The ALU takes 2 inputs
+    One of these is the D register, which will always be an input
+    The other is what we are going to call 'y' because of how the ALU works
+    y is one of 2 values:
+    * if a=0 y=A
+    * if a=1 y=M
+    */
+    Mux16(a=A, b=inM, sel=a, out=y);
+
+    // now we can feed everything into the ALU
+
+    ALU(
+        x=D, 
+        y=y, 
+        zx=c1, 
+        nx=c2, 
+        zy=c3, 
+        ny=c4, 
+        f=c5, 
+        no=c6, 
+        out=ALUoutput, 
+        out=outM,
+        zr=zr, 
+        ng=ng
+    );
+
+    // ! Now for our favorite part, jump
+
+    // we explain this up top, getting bored of typing lots of comments
+    // for the following, we will use ASM terms to make this easy to read later
+
+    // just some conditionals out of the ALU
+    Not(in=ng, out=ALUpos); 
+    Not(in=zr, out=ALUnz);
+
+    And(a=j3, b=ALUpos, out=partialJGT); 
+    And(a=partialJGT, b=ALUnz, out=JGT); // jump greater than 0
+
+    And(a=j2, b=zr, out=JEQ); // jump if 0
+    And(a=j1, b=ng, out=JLT); // jump if less than 0
+
+    // those are all of our conditionals, now we just need to check if we jump:
+
+    Or(a=JGT, b=JEQ, out=PJMP);
+    Or(a=PJMP, b=JLT, out=JMP); // if this is 1 we jump
     
-    // * Jump commands
-    And(a=instruction[2], b=instruction[15], out=JumpL);
-    And(a=instruction[1], b=instruction[15], out=JumpE);
-    And(a=instruction[0], b=instruction[15], out=JumpG);    
+    // the following gate creates an additional conditional that tells us if we want to increment (If we arent jumpung)
+    Not(in=JMP, out=increment);
 
-    // ! this part is the jump logic
-
-    // equal to zero logic
-
-    Or8Way(in=AOutputfirst, out=ANot0first);
-    Or8Way(in=AOutputSecond, out=ANot0second);
-    Or(a=ANot0first, b=ANot0second, out=ANot0);
-    Not(in=ANot0, out=AE0);
-
-    // less than zero logic
-
-    And(a=ANot0, b=negativeA, out=ALT0);
-
-    // greater than zero logic
-
-    Not(in=negativeA, out=positiveA);
-    And(a=ANot0, b=positiveA, out=AGT0);
-
-    // preparing for jump condition
-
-    And(a=JumpL, b=ALT0, out=LJunp);
-    And(a=JumpG, b=AGT0, out=GJump);
-    And(a=JumpE, b=AE0, out=EJump);
-
-    // making jump condition
-
-    Or(a=LJunp, b=GJump, out=LGJump);
-    Or(a=EJump, b=LGJump, out=jump);
-    Not(in=jump, out=notjump);
-
-    // ! this next part is all in the diagram
-
-    Mux16(a=instruction, b=ALUOutput, sel=instruction[0], out=Address); // * leftmost MUX
-
-    ARegister(in=Address, load=writeA, out=AOutput, out[1..15]=addressM, out[0..7]=AOutputfirst, out[8..15]=AOutputSecond, out[0]=negativeA); 
-
-    Mux16(a=inM, b=AOutput, sel=instruction[12], out=ALUin); // * right mux (kinda in the middle)
-
-    DRegister(in=ALUOutput, load=writeD, out=DOutput);
-
-    PC(in=AOutput, load=jump, inc=notjump, reset=reset, out[1..15]=pc);
-
-    ALU(x=DOutput, y=ALUin, zx=inM[4], nx=inM[5], zy=inM[6], ny=inM[7], f=inM[8], no=inM[9], out=outM, out=ALUOutput, zr=zr, ng=ng);
+    // the PC (the thingy that tells us what line of the rom we on)
+    PC(in=A, load=JMP, inc=increment, reset=reset, out[0..14]=pc);
+    // ? NOTE: the reasoning for 0..14 on the out is that an address (A value) cant have all 16 digits
 }
